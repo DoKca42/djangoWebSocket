@@ -1,3 +1,4 @@
+import asyncio
 import json
 
 from channels.generic.websocket import AsyncWebsocketConsumer
@@ -7,7 +8,9 @@ from asgiref.sync import async_to_sync
 # https://circumeo.io/blog/entry/django-websockets/
 
 class ChatConsumer(AsyncWebsocketConsumer):
+
     game_group_name = "game_group"
+    update_lock = asyncio.Lock()
 
     async def connect(self):
         print("New connection")
@@ -21,6 +24,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 "type": "connection_etalished",
                 "message": "Connected"})
         )
+        await asyncio.create_task(self.game_loop())
 
     async def disconnect(self, close_code):
         print("Leave connection")
@@ -45,3 +49,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'message': message
         }))
+
+    async def game_loop(self):
+        async with self.update_lock:
+            await self.channel_layer.group_send(
+                self.game_group_name,
+                {
+                    "type": "chat_message",
+                    "message": "nice"
+                }
+            )
+            await asyncio.sleep(0.05)
