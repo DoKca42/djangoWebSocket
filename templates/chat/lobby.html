@@ -9,20 +9,51 @@
 </head>
 <body>
     <h1>Game!</h1>
-    <ul>
-    {% for room in rooms %}
-        <li>{{ room.getId }}</li>
-    {% endfor %}
+    <ul id="game_list">
+
     </ul>
     
     <script type="text/javascript">
-        let url = `ws://${window.location.host}/ws/socket-server/`
+        let game_url = `ws://${window.location.host}/ws/socket-server/`
+        let home_url = `ws://${window.location.host}/ws/home/`
 
-        const chatSocket = new WebSocket(url)
+        const chatSocket = new WebSocket(game_url)
+        const homeSocket = new WebSocket(home_url)
 
         chatSocket.onmessage = function(e){
             let data = JSON.parse(e.data)
             console.log('Data:', data)
+        }
+
+        homeSocket.onmessage = function(e){
+            let data = JSON.parse(e.data)
+            if (data["type"] === "room_action")
+            {
+                if (data["action"] === "add")
+                {
+                    let liElement = document.createElement('li');
+                    liElement.textContent = "0 Player ("+data["room_id"]+")";
+                    liElement.setAttribute("room_id", data["room_id"]);
+                    liElement.setAttribute('onclick', 'joinRoom("'+data["room_id"]+'")');
+                    liElement.id = data["room_id"]
+                    document.getElementById("game_list").appendChild(liElement);
+                }
+                else if (data["action"] === "remove")
+                {
+                   let element = document.getElementById(data["room_id"]);
+                   if (element)
+                        element.parentNode.removeChild(element);
+                }
+                else if (data["action"] === "player_join")
+                {
+                    //console.log(data["room_id"]);
+                   document.getElementById(data["room_id"]).textContent = "1 Player ("+data["room_id"]+")";
+                }
+            }
+            else
+            {
+                console.log('Home Data:', data)
+            }
         }
 
         function sendMessage(message)
@@ -35,8 +66,16 @@
         
         function createRoom()
         {
-            chatSocket.send(JSON.stringify({
+            homeSocket.send(JSON.stringify({
                 type: "create_room"
+            }))
+        }
+
+        function joinRoom(room_id)
+        {
+            homeSocket.send(JSON.stringify({
+                type: "join_room",
+                room_id: room_id
             }))
         }
 

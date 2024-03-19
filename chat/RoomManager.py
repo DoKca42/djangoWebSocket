@@ -7,8 +7,8 @@ class RoomManager:
 
     def create_room(self):
         room = Room()
-        print(type(room))
         self.rooms.append(room)
+        return room.getId()
 
     def get_rooms(self):
         return self.rooms

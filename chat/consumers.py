@@ -39,10 +39,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        print(text_data)
-        if text_data_json["type"] == "create_room":
-            room_manager.create_room()
-            return
+        print("[GAME] "+text_data)
         await self.channel_layer.group_send(
             self.game_group_name,
             {
