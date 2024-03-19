@@ -8,8 +8,12 @@
 
 </head>
 <body>
-    <h1>Lets chat!</h1>
-
+    <h1>Game!</h1>
+    <ul>
+    {% for room in rooms %}
+        <li>{{ room.getId }}</li>
+    {% endfor %}
+    </ul>
     
     <script type="text/javascript">
         let url = `ws://${window.location.host}/ws/socket-server/`
@@ -26,6 +30,13 @@
             chatSocket.send(JSON.stringify({
                 type: "'message",
                 'message':message
+            }))
+        }
+        
+        function createRoom()
+        {
+            chatSocket.send(JSON.stringify({
+                type: "create_room"
             }))
         }
 
