@@ -31,23 +31,37 @@ class HomeConsumer(AsyncWebsocketConsumer):
         text_data_json = json.loads(text_data)
         print("[HOME] "+text_data)
         if text_data_json["type"] == "create_room":
-            room_id = room_manager.create_room()
+            room_id = room_manager.createRoom()
+            room_player_nb = 0
+            if room_manager.isRoomIdExist(room_id):
+                room_player_nb = room_manager.getRoomById(room_id).getPlayerNb()
             await self.channel_layer.group_send(
                 self.home_group_name,
                 {
                     "type": "room_action",
                     "room_id": room_id,
-                    "action": "add"
+                    "action": "add",
+                    "ia_game": "none",
+                    "player_nb": room_player_nb
                 }
             )
             return
         if text_data_json["type"] == "join_room":
+            room_player_nb = 0
+            if room_manager.isRoomIdExist(text_data_json["room_id"]):
+                room = room_manager.getRoomById(text_data_json["room_id"])
+                if not room.playerIdIsInRoom(text_data_json["player_id"]):
+                    room.addPlayer(text_data_json["player_id"])  # check le retour et envoyer un msg d'erreur en ca de probleme
+                room_player_nb = room.getPlayerNb()
             await self.channel_layer.group_send(
                 self.home_group_name,
                 {
                     "type": "room_action",
                     "room_id": text_data_json["room_id"],
-                    "action": "player_join"
+                    "action": "player_join",
+                    "ia_game": "none",
+                    "player_nb": room_player_nb
+
                 }
             )
             return
@@ -55,9 +69,13 @@ class HomeConsumer(AsyncWebsocketConsumer):
     async def room_action(self, event):
         room_id = event['room_id']
         action = event['action']
+        ia = event['ia_game']
+        player_nb = event['player_nb']
 
         await self.send(text_data=json.dumps({
             "type": "room_action",
             "room_id": room_id,
-            "action": action
+            "action": action,
+            "ia_game": ia,
+            "player_nb": player_nb
         }))

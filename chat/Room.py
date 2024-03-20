@@ -4,8 +4,8 @@ import time
 
 class Room:
     id = 0
-    player_a = {}
-    player_b = {}
+    player_id_a = ""
+    player_id_b = ""
     score_player_a = 0
     score_player_b = 0
     game_start_date = 0
@@ -18,11 +18,11 @@ class Room:
 
     # ======= SETTER =======
 
-    def setPlayerA(self, player_a):
-        self.player_a = player_a
+    def setPlayerA(self, player_id_a):
+        self.player_id_a = player_id_a
 
-    def setPlayerB(self, player_b):
-        self.player_b = player_b
+    def setPlayerB(self, player_id_b):
+        self.player_id_b = player_id_b
 
     def setScorePlayerA(self, score_player_a):
         self.score_player_a = score_player_a
@@ -36,16 +36,25 @@ class Room:
     def setGameEndDate(self):
         self.game_end_date = int(time.time())
 
+    def addPlayer(self, player_id):
+        if self.getPlayerNb() == 2:
+            return False
+        if self.getPlayerNb() == 1:
+            self.setPlayerB(player_id)
+        else:
+            self.setPlayerA(player_id)
+        return True
+
     # ======= GETTER =======
 
     def getId(self):
         return self.id
 
     def getPlayerA(self):
-        return self.player_a
+        return self.player_id_a
 
     def getPlayerB(self):
-        return self.player_b
+        return self.player_id_b
 
     def getScorePlayerA(self):
         return self.score_player_a
@@ -61,3 +70,16 @@ class Room:
 
     def getCreatedDate(self):
         return self.created_date
+
+    def getPlayerNb(self):
+        if self.player_id_b != "" and self.player_id_b != "":
+            return 2
+        if self.player_id_a != "" or self.player_id_b != "":
+            return 1
+        return 0
+
+    def playerIdIsInRoom(self, player_id):
+        if self.player_id_a == player_id or self.player_id_b == player_id:
+            return True
+        return False
+

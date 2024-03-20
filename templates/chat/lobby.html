@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -5,80 +6,33 @@
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
     <title>Lobby</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
-
+    
+    <link rel="stylesheet" type="text/css" href="{% static 'css/room.css' %}">
 </head>
 <body>
-    <h1>Game!</h1>
-    <ul id="game_list">
 
+<div class="room-main">
+    <div class="room-up-main">
+    <div class="room-title-main">
+        <h1>Rooms:</h1>
+    </div>
+    <ul id="game_list" class="room-list unselectable">
+         {% for room in rooms %}
+            <li id="{{ room.getId }}" room_id="{{ room.getId }}" onclick="room_request.joinRoom('{{ room.getId }}')">{{ room.getPlayerNb }} Player - ({{ room.getId }})</li>
+         {% endfor %}
     </ul>
-    
-    <script type="text/javascript">
-        let game_url = `ws://${window.location.host}/ws/socket-server/`
-        let home_url = `ws://${window.location.host}/ws/home/`
+    </div>
+    <div class="room-create-btn-main">
+        <span class="room-create-btn unselectable" onclick="room_request.createRoom()">Create Room</span>
+    </div>
+</div>
 
-        const chatSocket = new WebSocket(game_url)
-        const homeSocket = new WebSocket(home_url)
+<script type="text/javascript" src="{% static 'js/auth.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/game/room_visual.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/game/room_request.js' %}"></script>
+<script type="text/javascript">
+    const room_request = new RoomRequest()
 
-        chatSocket.onmessage = function(e){
-            let data = JSON.parse(e.data)
-            console.log('Data:', data)
-        }
-
-        homeSocket.onmessage = function(e){
-            let data = JSON.parse(e.data)
-            if (data["type"] === "room_action")
-            {
-                if (data["action"] === "add")
-                {
-                    let liElement = document.createElement('li');
-                    liElement.textContent = "0 Player ("+data["room_id"]+")";
-                    liElement.setAttribute("room_id", data["room_id"]);
-                    liElement.setAttribute('onclick', 'joinRoom("'+data["room_id"]+'")');
-                    liElement.id = data["room_id"]
-                    document.getElementById("game_list").appendChild(liElement);
-                }
-                else if (data["action"] === "remove")
-                {
-                   let element = document.getElementById(data["room_id"]);
-                   if (element)
-                        element.parentNode.removeChild(element);
-                }
-                else if (data["action"] === "player_join")
-                {
-                    //console.log(data["room_id"]);
-                   document.getElementById(data["room_id"]).textContent = "1 Player ("+data["room_id"]+")";
-                }
-            }
-            else
-            {
-                console.log('Home Data:', data)
-            }
-        }
-
-        function sendMessage(message)
-        {
-            chatSocket.send(JSON.stringify({
-                type: "'message",
-                'message':message
-            }))
-        }
-        
-        function createRoom()
-        {
-            homeSocket.send(JSON.stringify({
-                type: "create_room"
-            }))
-        }
-
-        function joinRoom(room_id)
-        {
-            homeSocket.send(JSON.stringify({
-                type: "join_room",
-                room_id: room_id
-            }))
-        }
-
-    </script>
+</script>
 </body>
 </html>

@@ -26,9 +26,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 "message": "Connected"})
         )
 
-        rooms = room_manager.get_rooms()
-        for room in rooms:
-            print(room.getId())
         # await asyncio.create_task(self.game_loop())
 
     async def disconnect(self, close_code):
