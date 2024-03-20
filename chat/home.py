@@ -7,6 +7,7 @@ from chat.RoomManager import room_manager
 
 class HomeConsumer(AsyncWebsocketConsumer):
     home_group_name = "home"
+    #client_id envoyer just apres la connexion pour envoyer des msg d'erreur juste a une personne
 
     async def connect(self):
         print("[HOME] New connection")
