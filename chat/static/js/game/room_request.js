@@ -28,6 +28,13 @@ class RoomRequest {
                 else if (data["action"] === "player_join")
                     visual_editRoom(data);
             }
+            else if (data["type"] === "connection_etalished")
+                this.#sendAuth();
+            else if (data["type"] === "notification")
+            {
+                if (data["category"] === "error")
+                    notification.error(data["title"], data["message"]);
+            }
             else
             {
                 console.log('Home Data:', data)
@@ -52,6 +59,15 @@ class RoomRequest {
         this.#socket.send(JSON.stringify({
             type: "join_room",
             room_id: room_id,
+            player_id: player_id
+        }))
+    }
+
+    #sendAuth()
+    {
+        this.#socket.send(JSON.stringify({
+            type: "auth",
+            session_id: player_id,
             player_id: player_id
         }))
     }

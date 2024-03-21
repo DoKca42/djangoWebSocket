@@ -76,3 +76,73 @@
     }
 
     // ============== RECEIVED ==============
+
+
+/* ==================== Notification ==================== */
+//duree des notifs info ou si il faut les fermer
+//duree des notifs error ou si il faut les fermer
+
+
+class Notification {
+
+    /* in millisecondes */
+    #duration_info = 4000;
+    #duration_error = 4000;
+
+    #notification;
+    #notification_title;
+    #notification_message;
+
+    #active = false;
+    #active_time;
+
+    constructor() {
+        this.#notification = document.getElementById("notification");
+        this.#notification_title = document.getElementById("notification_title");
+        this.#notification_message = document.getElementById("notification_message");
+        this.reset();
+    }
+
+    reset()
+    {
+        console.log("here");
+        if (this.#active === true)
+            clearTimeout(this.#active_time);
+        this.#active = false;
+        this.#notification.classList.remove("active");
+        this.#notification.classList.remove("notification-error");
+        this.#notification.classList.remove("notification-info");
+        this.#notification_title.innerHTML = "None";
+        this.#notification_message.innerHTML = "None";
+    }
+
+    #setTimeOut(time)
+    {
+        this.#active_time = setTimeout(function() {
+            notification.reset();
+        }, time);
+    }
+
+    info(title, message)
+    {
+        this.reset();
+        this.#active = true;
+        this.#notification.classList.add("active");
+        this.#notification.classList.add("notification-info");
+        this.#notification_title.innerHTML = title;
+        this.#notification_message.innerHTML = message;
+        this.#setTimeOut(this.#duration_info);
+    }
+
+     error(title, message)
+    {
+        this.reset();
+        this.#active = true;
+        this.#notification.classList.add("active");
+        this.#notification.classList.add("notification-error");
+        this.#notification_title.innerHTML = title;
+        this.#notification_message.innerHTML = message;
+        this.#setTimeOut(this.#duration_error);
+    }
+
+}
