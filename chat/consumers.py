@@ -11,7 +11,6 @@ from chat.RoomManager import room_manager
 
 class ChatConsumer(AsyncWebsocketConsumer):
     game_group_name = "game_group"
-    update_lock = asyncio.Lock()
 
     async def connect(self):
         print("New connection")
