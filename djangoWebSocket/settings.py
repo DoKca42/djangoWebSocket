@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'chat',
+    'room',
 ]
 
 ASGI_APPLICATION = 'djangoWebSocket.asgi.application'

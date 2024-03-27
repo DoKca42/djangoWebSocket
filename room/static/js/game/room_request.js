@@ -5,7 +5,7 @@ class RoomRequest {
     #socket;
 
     constructor() {
-        this.#socket_url = `ws://${window.location.host}/ws/home/`;
+        this.#socket_url = `ws://${window.location.host}/ws/room/`;
         this.#socket = new WebSocket(this.#socket_url);
 
         this.#socketListen();

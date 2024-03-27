@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from chat.RoomManager import room_manager
+from room.RoomManager import room_manager
 
 
 # Create your views here.
