@@ -4,10 +4,12 @@ class RoomClient:
     player_id = ""
     owner_of_a_room = False
     in_game = False
+    lang = ""
 
     def __init__(self):
         self.in_game = False
         self.owner_of_a_room = False
+        self.lang = "fr"
 
     # ======= SETTER =======
 
@@ -26,6 +28,9 @@ class RoomClient:
     def setInGame(self, status):
         self.in_game = status
 
+    def setLang(self, lang):
+        self.lang = lang
+
     # ======= GETTER =======
 
     def getSessionId(self):
@@ -43,6 +48,9 @@ class RoomClient:
     def getInGame(self):
         return self.in_game
 
+    def getLang(self):
+        return self.lang
+
     # ======= OTHER =======
 
     def isAValidSession(self):
@@ -53,3 +61,5 @@ class RoomClient:
     def printAll(self):
         print("Variables de RoomClient :")
         print(vars(self))
+
+        pass

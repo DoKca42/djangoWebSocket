@@ -1,4 +1,4 @@
-from .Room import Room
+from room.Room import Room
 
 
 class RoomManager:

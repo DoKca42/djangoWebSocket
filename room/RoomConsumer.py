@@ -1,7 +1,7 @@
-import asyncio
 import json
 
 from channels.generic.websocket import AsyncWebsocketConsumer
+from language.Language import language
 from room.RoomManager import room_manager
 from room.RoomClient import RoomClient
 from room.RoomRequest import RoomRequest
@@ -28,7 +28,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         data = json.loads(text_data)
-        print(data)
+        print(language.get("fr", "notif.error.already_room_owner"))
         if data["type"] == "auth":
             await self.clientAuth(data["session_id"], data["player_id"])
             return
@@ -65,14 +65,19 @@ class RoomConsumer(AsyncWebsocketConsumer):
     Client need (valid auth / not be owner of other room / not in game)
     """
     async def clientCreateRoom(self):
+        lang = self.client.getLang()
         if not self.client.isAValidSession():
             await RoomRequest.notification(self, "error", "Fatal Error", "Login redirection")
             return
         if self.client.getOwnerOfARoom():
-            await RoomRequest.notification(self, "error", "Erreur", "Vous avez deja creer une room")
+            await RoomRequest.notification(self, "error",
+                    language.get(lang, "notif.error.title"),
+                    language.get(lang, "notif.error.already_room_owner"))
             return
         if self.client.getInGame():
-            await RoomRequest.notification(self, "error", "Erreur", "Vous ne pouvez pas creer de room en partie")
+            await RoomRequest.notification(self, "error",
+                    language.get(lang, "notif.error.title"),
+                    language.get(lang, "notif.error.in_game_create"))
             return
 
         room_id = room_manager.createRoom()
@@ -90,11 +95,14 @@ class RoomConsumer(AsyncWebsocketConsumer):
     Client need (valid auth / not in game / not already in this room)
     """
     async def clientJoinRoom(self, room_id, player_id):
+        lang = self.client.getLang()
         if not self.client.isAValidSession():
             await RoomRequest.notification(self, "error", "Fatal Error", "Login redirection")
             return
         if self.client.getInGame():
-            await RoomRequest.notification(self, "error", "Erreur", "Vous ne pouvez pas rejoindre de room en partie")
+            await RoomRequest.notification(self, "error",
+                    language.get(lang, "notif.error.title"),
+                    language.get(lang, "notif.error.in_game_join"))
             return
         room_player_nb = 0
         if room_manager.isRoomIdExist(room_id):
@@ -102,7 +110,9 @@ class RoomConsumer(AsyncWebsocketConsumer):
             if not room.playerIdIsInRoom(player_id):
                 room.addPlayer(player_id)
             else:
-                await RoomRequest.notification(self, "error", "Erreur", "Vous etes deja dans la room")
+                await RoomRequest.notification(self, "error",
+                    language.get(lang, "notif.error.title"),
+                    language.get(lang, "notif.error.already_in_room"))
                 return
             room_player_nb = room.getPlayerNb()
         await RoomRequest.joinRoom(self.room_group_name, room_id, room_player_nb)
