@@ -18,16 +18,14 @@ class RoomRequest {
     {
         this.#socket.onmessage = (e) => {
             let data = JSON.parse(e.data);
+            console.log('ROOM Data:', data)
 
-            if (data["type"] === "room_action")
-            {
-                if (data["action"] === "add")
-                    visual_addRoom(data);
-                else if (data["action"] === "remove")
-                    visual_removeRoom(data);
-                else if (data["action"] === "player_join")
-                    visual_editRoom(data);
-            }
+            if (data["type"] === "create_room")
+                visual_addRoom(data);
+            else if (data["type"] === "remove")
+                visual_removeRoom(data);
+            else if (data["type"] === "join_room")
+                visual_editRoom(data);
             else if (data["type"] === "connection_etalished")
                 this.#sendAuth();
             else if (data["type"] === "notification")

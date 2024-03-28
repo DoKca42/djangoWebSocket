@@ -12,6 +12,9 @@ class RoomConsumer(AsyncWebsocketConsumer):
     room_group_name = "room_lobby"
     client = None
 
+    """
+    SOCKET EVENT:
+    """
     async def connect(self):
         print("[ROOM] New connection")
         await self.accept()
@@ -36,23 +39,12 @@ class RoomConsumer(AsyncWebsocketConsumer):
             await self.clientJoinRoom(data["room_id"], self.client.getPlayerId())
             return
 
-    async def room_action(self, event):
-        room_id = event['room_id']
-        action = event['action']
-        ia = event['ia_game']
-        player_nb = event['player_nb']
-
-        await self.send(text_data=json.dumps({
-            "type": "room_action",
-            "room_id": room_id,
-            "action": action,
-            "ia_game": ia,
-            "player_nb": player_nb
-        }))
-
+    """
+    AUTHENTIFY:
+    
+    Client need (valid auth)
+    """
     async def clientAuth(self, session_id, player_id):
-        self.client.printAll()
-        room_client_manager.printAll()
         if self.client.isAValidSession():
             return
 
@@ -67,6 +59,11 @@ class RoomConsumer(AsyncWebsocketConsumer):
             return
         await RoomRequest.notification(self, "error", "Fatal Error", "Login redirection")
 
+    """
+    CREATE ROOM:
+    
+    Client need (valid auth / not be owner of other room / not in game)
+    """
     async def clientCreateRoom(self):
         if not self.client.isAValidSession():
             await RoomRequest.notification(self, "error", "Fatal Error", "Login redirection")
@@ -77,23 +74,21 @@ class RoomConsumer(AsyncWebsocketConsumer):
         if self.client.getInGame():
             await RoomRequest.notification(self, "error", "Erreur", "Vous ne pouvez pas creer de room en partie")
             return
+
         room_id = room_manager.createRoom()
         room_player_nb = 0
         if room_manager.isRoomIdExist(room_id):
             room_player_nb = room_manager.getRoomById(room_id).getPlayerNb()
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                "type": "room_action",
-                "room_id": room_id,
-                "action": "add",
-                "ia_game": "none",
-                "player_nb": room_player_nb
-            }
-        )
+
+        await RoomRequest.createRoom(self.room_group_name, room_id, False, room_player_nb)
         self.client.setOwnerOfARoom(True)
         await self.clientJoinRoom(room_id, self.client.getPlayerId())
 
+    """
+    JOIN ROOM:
+    
+    Client need (valid auth / not in game / not already in this room)
+    """
     async def clientJoinRoom(self, room_id, player_id):
         if not self.client.isAValidSession():
             await RoomRequest.notification(self, "error", "Fatal Error", "Login redirection")
@@ -110,14 +105,11 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 await RoomRequest.notification(self, "error", "Erreur", "Vous etes deja dans la room")
                 return
             room_player_nb = room.getPlayerNb()
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                "type": "room_action",
-                "room_id": room_id,
-                "action": "player_join",
-                "ia_game": "none",
-                "player_nb": room_player_nb
+        await RoomRequest.joinRoom(self.room_group_name, room_id, room_player_nb)
 
-            }
-        )
+    async def sendToGroup(self, event):
+        event_data = event.copy()
+        rq_type = event_data.pop('rq_type')
+        event_data['type'] = str(rq_type)
+        print(event_data)
+        await self.send(text_data=json.dumps(event_data))
