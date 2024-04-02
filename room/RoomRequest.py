@@ -24,6 +24,30 @@ class RoomRequest:
             }))
 
     @staticmethod
+    async def waitingMatch(room_group_name, status):
+        channel_layer = get_channel_layer()
+        await channel_layer.group_send(
+            room_group_name,
+            {
+                "type": "sendToGroup",
+                "rq_type": "waiting_match",
+                "status": status
+            }
+        )
+
+    @staticmethod
+    async def foundMatch(room_group_name, match_id):
+        channel_layer = get_channel_layer()
+        await channel_layer.group_send(
+            room_group_name,
+            {
+                "type": "sendToGroup",
+                "rq_type": "found_match",
+                "match_id": match_id
+            }
+        )
+
+    @staticmethod
     async def createRoom(room_group_name, room_id, ia_game, player_nb):
         channel_layer = get_channel_layer()
         await channel_layer.group_send(

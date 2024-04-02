@@ -11,6 +11,8 @@ class Room:
     game_start_date = 0
     game_end_date = 0
     created_date = 0
+    game_started = False
+    game_ia = False
 
     def __init__(self):
         self.id = str(uuid.uuid4())
@@ -44,6 +46,12 @@ class Room:
         else:
             self.setPlayerA(player_id)
         return True
+
+    def setGameStarted(self):
+        self.game_started = True
+
+    def setGameIa(self, ia):
+        self.game_ia = ia
 
     # ======= GETTER =======
 
@@ -83,3 +91,8 @@ class Room:
             return True
         return False
 
+    def getGameStartedDate(self):
+        return self.game_started
+
+    def getGameIa(self):
+        return self.game_ia

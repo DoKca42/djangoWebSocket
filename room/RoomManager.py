@@ -25,5 +25,11 @@ class RoomManager:
                 return room
         return False
 
+    def getWaitingRoom(self):
+        for room in self.rooms:
+            if room.getGameIa() is False and room.getPlayerNb() == 1:
+                return room.getId()
+        return False
+
 
 room_manager = RoomManager()

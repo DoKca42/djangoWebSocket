@@ -18,26 +18,22 @@
 <div class="room-main">
     <div class="room-up-main">
     <div class="room-title-main">
-        <h1>Rooms:</h1>
+        <h1>PONG</h1>
     </div>
-    <ul id="game_list" class="room-list unselectable">
-         {% for room in rooms %}
-            <li id="{{ room.getId }}" room_id="{{ room.getId }}" onclick="room_request.joinRoom('{{ room.getId }}')">{{ room.getPlayerNb }} Player - ({{ room.getId }})</li>
-         {% endfor %}
-    </ul>
     </div>
     <div class="room-create-btn-main">
-        <span class="room-create-btn unselectable" onclick="room_request.createRoom()">Create Room</span>
+        <span class="room-create-btn unselectable" onclick="matchmaking.findGame()">FIND MATCH</span>
+        <div class="loader" id="find_game_loader" style="display: none"></div>
     </div>
 </div>
 
 <script type="text/javascript" src="{% static 'js/auth.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/game/notification.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/game/room_visual.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/game/room_request.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/game/matchmaking.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/game/matchmaking_visual.js' %}"></script>
 <script type="text/javascript">
     const notification = new Notification()
-    const room_request = new RoomRequest()
+    const matchmaking = new Matchmaking()
 
 </script>
 </body>

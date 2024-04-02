@@ -1,5 +1,9 @@
-    //?id=04e780a1-1a8a-4b41-b971-1f50ebe7fbc1
-    //?id=87ec604d-6271-46ef-9faa-82383a710835
+/*
+?id=04e780a1-1a8a-4b41-b971-1f50ebe7fbc1
+?id=87ec604d-6271-46ef-9faa-82383a710835
+?id=58a57276-f775-46f4-bc91-1e5420900d42
+?id=0d654946-ba1f-41bf-82d2-97b2751ff58f
+*/
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const player_id = urlParams.get('id')

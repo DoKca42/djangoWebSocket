@@ -2,6 +2,7 @@ import json
 
 from channels.generic.websocket import AsyncWebsocketConsumer
 from language.Language import language
+from room.ClientChannel import ClientChannel
 from room.RoomManager import room_manager
 from room.RoomClient import RoomClient
 from room.RoomRequest import RoomRequest
@@ -11,6 +12,7 @@ from room.RoomClientManager import room_client_manager
 class RoomConsumer(AsyncWebsocketConsumer):
     room_group_name = "room_lobby"
     client = None
+    channels = ClientChannel()
 
     """
     SOCKET EVENT:
@@ -28,15 +30,11 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         data = json.loads(text_data)
-        print(language.get("fr", "notif.error.already_room_owner"))
         if data["type"] == "auth":
             await self.clientAuth(data["session_id"], data["player_id"])
             return
-        if data["type"] == "create_room":
-            await self.clientCreateRoom()
-            return
-        if data["type"] == "join_room":
-            await self.clientJoinRoom(data["room_id"], self.client.getPlayerId())
+        if data["type"] == "matchmaking":
+            await self.clientMatchmaking(data)
             return
 
     """
@@ -60,19 +58,14 @@ class RoomConsumer(AsyncWebsocketConsumer):
         await RoomRequest.notification(self, "error", "Fatal Error", "Login redirection")
 
     """
-    CREATE ROOM:
-    
-    Client need (valid auth / not be owner of other room / not in game)
+    MATCHMAKING:
+
+    Client need (valid auth / not in game)
     """
-    async def clientCreateRoom(self):
+    async def clientMatchmaking(self, data):
         lang = self.client.getLang()
         if not self.client.isAValidSession():
             await RoomRequest.notification(self, "error", "Fatal Error", "Login redirection")
-            return
-        if self.client.getOwnerOfARoom():
-            await RoomRequest.notification(self, "error",
-                    language.get(lang, "notif.error.title"),
-                    language.get(lang, "notif.error.already_room_owner"))
             return
         if self.client.getInGame():
             await RoomRequest.notification(self, "error",
@@ -80,14 +73,26 @@ class RoomConsumer(AsyncWebsocketConsumer):
                     language.get(lang, "notif.error.in_game_create"))
             return
 
-        room_id = room_manager.createRoom()
-        room_player_nb = 0
-        if room_manager.isRoomIdExist(room_id):
-            room_player_nb = room_manager.getRoomById(room_id).getPlayerNb()
+        if data["action"] == "find_game":
+            await self.mm_findGame()
+            return
 
-        await RoomRequest.createRoom(self.room_group_name, room_id, False, room_player_nb)
-        self.client.setOwnerOfARoom(True)
-        await self.clientJoinRoom(room_id, self.client.getPlayerId())
+    """
+    FIND MATCH:
+    
+    Client need (depend on clientMatchmaking)
+    """
+    async def mm_findGame(self):
+        waiting_room = room_manager.getWaitingRoom()
+        if waiting_room is False:
+            waiting_room = room_manager.createRoom()
+            await self.clientJoinRoom(waiting_room, self.client.getPlayerId())
+            await RoomRequest.waitingMatch(waiting_room, True)
+        else:
+            await self.clientJoinRoom(waiting_room, self.client.getPlayerId())
+            room_manager.getRoomById(waiting_room).setGameStarted()
+            await RoomRequest.foundMatch(waiting_room, waiting_room)
+            await RoomRequest.waitingMatch(waiting_room, False)
 
     """
     JOIN ROOM:
@@ -104,18 +109,17 @@ class RoomConsumer(AsyncWebsocketConsumer):
                     language.get(lang, "notif.error.title"),
                     language.get(lang, "notif.error.in_game_join"))
             return
-        room_player_nb = 0
+
         if room_manager.isRoomIdExist(room_id):
             room = room_manager.getRoomById(room_id)
             if not room.playerIdIsInRoom(player_id):
                 room.addPlayer(player_id)
+                await self.channels.addChannel(self, room_id)
             else:
                 await RoomRequest.notification(self, "error",
                     language.get(lang, "notif.error.title"),
                     language.get(lang, "notif.error.already_in_room"))
                 return
-            room_player_nb = room.getPlayerNb()
-        await RoomRequest.joinRoom(self.room_group_name, room_id, room_player_nb)
 
     async def sendToGroup(self, event):
         event_data = event.copy()
