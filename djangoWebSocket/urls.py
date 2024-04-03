@@ -17,8 +17,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+import room.views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('room.urls'))
+    path('', room.views.lobby),
+    path('debug_room', room.views.debug_room),
+    path('debug_client', room.views.debug_client)
 ]

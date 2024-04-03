@@ -16,7 +16,15 @@ class Room:
 
     def __init__(self):
         self.id = str(uuid.uuid4())
+        self.player_id_a = ""
+        self.player_id_b = ""
+        self.score_player_a = 0
+        self.score_player_b = 0
+        self.game_start_date = 0
+        self.game_end_date = 0
         self.created_date = int(time.time())
+        self.game_started = False
+        self.game_ia = False
 
     # ======= SETTER =======
 
@@ -86,13 +94,18 @@ class Room:
             return 1
         return 0
 
-    def playerIdIsInRoom(self, player_id):
-        if self.player_id_a == player_id or self.player_id_b == player_id:
-            return True
-        return False
-
     def getGameStartedDate(self):
         return self.game_started
 
     def getGameIa(self):
         return self.game_ia
+
+    def playerIdIsInRoom(self, player_id):
+        if self.player_id_a == player_id or self.player_id_b == player_id:
+            return True
+        return False
+
+    def isWaiting(self):
+        if self.getGameIa() is False and self.getPlayerNb() == 1:
+            return True
+        return False
