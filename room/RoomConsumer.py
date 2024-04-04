@@ -70,9 +70,13 @@ class RoomConsumer(AsyncWebsocketConsumer):
         if self.client.getInGame():
             await RoomRequest.notification(self, "error",
                     language.get(lang, "notif.error.title"),
-                    language.get(lang, "notif.error.in_game_create"))
+                    language.get(lang, "notif.error.already_in_game"))
             return
-
+        if self.client.isInARoom():
+            await RoomRequest.notification(self, "error",
+                    language.get(lang, "notif.error.title"),
+                    language.get(lang, "notif.error.already_waiting"))
+            return
         if data["action"] == "find_game":
             await self.mm_findGame()
             return
@@ -89,11 +93,13 @@ class RoomConsumer(AsyncWebsocketConsumer):
             waiting_room = room_manager.createRoom()
             await self.clientJoinRoom(waiting_room, self.client.getPlayerId())
             await RoomRequest.waitingMatch(waiting_room, True)
+            self.client.setInARoom(True)
         else:
             if await self.clientJoinRoom(waiting_room, self.client.getPlayerId()):
                 room_manager.getRoomById(waiting_room).setGameStarted()
                 await RoomRequest.foundMatch(waiting_room, waiting_room)
                 await RoomRequest.waitingMatch(waiting_room, False)
+                self.client.setInARoom(True)
 
     """
     JOIN ROOM:

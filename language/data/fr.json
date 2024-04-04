@@ -3,6 +3,7 @@
   "notif.error.already_room_owner": "Vous avez déjà créé une room",
   "notif.error.already_in_room": "Vous êtes déjà dans une room",
   "notif.error.in_game_create": "Vous ne pouvez pas créer de room en partie",
-  "notif.error.in_game_join": "Vous ne pouvez pas rejoindre de room en partie"
-
+  "notif.error.in_game_join": "Vous ne pouvez pas rejoindre de room en partie",
+  "notif.error.already_waiting": "Vous êtes déjà en recherche de partie",
+  "notif.error.already_in_game": "Vous êtes déjà en partie"
 }

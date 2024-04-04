@@ -7,7 +7,7 @@ class RoomClient:
     session_id = ""
     session_expired = 0
     player_id = ""
-    owner_of_a_room = False
+    in_a_room = False
     in_game = False
     lang = ""
     channels = []
@@ -16,7 +16,7 @@ class RoomClient:
         self.session_id = ""
         self.session_expired = 0
         self. player_id = ""
-        self.owner_of_a_room = False
+        self.in_a_room = False
         self.in_game = False
         self.lang = "fr"
         self.channels = []
@@ -32,8 +32,8 @@ class RoomClient:
     def setPlayerId(self, player_id):
         self.player_id = player_id
 
-    def setOwnerOfARoom(self, status):
-        self.owner_of_a_room = status
+    def setInARoom(self, status):
+        self.in_a_room = status
 
     def setInGame(self, status):
         self.in_game = status
@@ -63,8 +63,8 @@ class RoomClient:
     def getPlayerId(self):
         return self.player_id
 
-    def getOwnerOfARoom(self):
-        return self.owner_of_a_room
+    def isInARoom(self):
+        return self.in_a_room
 
     def getInGame(self):
         return self.in_game
