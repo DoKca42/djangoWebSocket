@@ -7,6 +7,7 @@ from room.RoomManager import room_manager
 from room.RoomClient import RoomClient
 from room.RoomRequest import RoomRequest
 from room.RoomClientManager import room_client_manager
+from room.TournamentManager import tournament_manager
 
 
 class RoomConsumer(AsyncWebsocketConsumer):
@@ -77,9 +78,22 @@ class RoomConsumer(AsyncWebsocketConsumer):
                     language.get(lang, "notif.error.title"),
                     language.get(lang, "notif.error.already_waiting"))
             return
+        #player is in tournament
         if data["action"] == "find_game":
             await self.mm_findGame()
             return
+
+    """
+    FIND TOURNAMENT:
+
+    Client need (depend on clientMatchmaking)
+    """
+
+    async def mm_findTournament(self):
+        waiting_tour = tournament_manager.getWaitingRoom()
+
+        if waiting_tour is False:
+            waiting_tour = tournament_manager.createWaitingRoom()
 
     """
     FIND MATCH:
@@ -100,6 +114,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 await RoomRequest.foundMatch(waiting_room, waiting_room)
                 await RoomRequest.waitingMatch(waiting_room, False)
                 self.client.setInARoom(True)
+                room_manager.getRoomById(waiting_room).setAllPlayersInGameStatus(True)
 
     """
     JOIN ROOM:

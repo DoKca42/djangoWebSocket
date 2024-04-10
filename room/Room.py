@@ -1,6 +1,8 @@
 import uuid
 import time
 
+from room.RoomClientManager import room_client_manager
+
 
 class Room:
     id = 0
@@ -60,6 +62,12 @@ class Room:
 
     def setGameIa(self, ia):
         self.game_ia = ia
+
+    def setAllPlayersInGameStatus(self, status):
+        if self.getPlayerA() != "":
+            room_client_manager.getClientById(self.getPlayerA()).setInGame(status)
+        if self.getPlayerB() != "":
+            room_client_manager.getClientById(self.getPlayerB()).setInGame(status)
 
     # ======= GETTER =======
 
