@@ -61,14 +61,14 @@ class RoomConsumer(AsyncWebsocketConsumer):
     """
     MATCHMAKING:
 
-    Client need (valid auth / not in game)
+    Client need (valid auth / not in game / not waiting)
     """
     async def clientMatchmaking(self, data):
         lang = self.client.getLang()
         if not self.client.isAValidSession():
             await RoomRequest.notification(self, "error", "Fatal Error", "Login redirection")
             return
-        if self.client.getInGame():
+        if self.client.getInGame() or self.client.getInGameTour():
             await RoomRequest.notification(self, "error",
                     language.get(lang, "notif.error.title"),
                     language.get(lang, "notif.error.already_in_game"))
@@ -76,25 +76,35 @@ class RoomConsumer(AsyncWebsocketConsumer):
         if self.client.isInARoom():
             await RoomRequest.notification(self, "error",
                     language.get(lang, "notif.error.title"),
-                    language.get(lang, "notif.error.already_waiting"))
+                    language.get(lang, "notif.error.already_waiting_room"))
             return
-        #player is in tournament
+        if self.client.getInARoomTour():
+            await RoomRequest.notification(self, "error",
+                    language.get(lang, "notif.error.title"),
+                    language.get(lang, "notif.error.already_waiting_tournament"))
+
         if data["action"] == "find_game":
             await self.mm_findGame()
-            return
+        elif data["action"] == "find_tournament":
+            await self.mm_findTournament()
 
     """
     FIND TOURNAMENT:
 
     Client need (depend on clientMatchmaking)
     """
-
     async def mm_findTournament(self):
         waiting_tour = tournament_manager.getWaitingRoom()
 
         if waiting_tour is False:
             waiting_tour = tournament_manager.createWaitingRoom()
-
+            waiting_tour.addPlayer(self.client.getPlayerId())
+            self.client.setInARoomTour(True)
+        else:
+            if await self.clientJoinTournament(waiting_tour, self.client.getPlayerId()):
+                self.client.setInARoomTour(True)
+                if waiting_tour.getPlayerNb() == 4:
+                    waiting_tour.startTournament()
     """
     FIND MATCH:
     
@@ -117,6 +127,39 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 room_manager.getRoomById(waiting_room).setAllPlayersInGameStatus(True)
 
     """
+    JOIN TOURNAMENT:
+
+    Client need (valid auth / not in tour / not already in this tour)
+    """
+    async def clientJoinTournament(self, tour_id, player_id):
+        lang = self.client.getLang()
+        if not self.client.isAValidSession():
+            await RoomRequest.notification(self, "error", "Fatal Error", "Login redirection")
+            return False
+
+        if not tournament_manager.isTournamentIdExist(tour_id):
+            await RoomRequest.notification(self, "error",
+                    language.get(lang, "notif.error.title"),
+                    language.get(lang, "notif.error.unknown_in_tournament"))
+            return False
+
+        tour = tournament_manager.getTournamentById(tour_id)
+        if tour.playerIsInTournament(player_id):
+            await RoomRequest.notification(self, "error",
+                    language.get(lang, "notif.error.title"),
+                    language.get(lang, "notif.error.already_in_tournament"))
+            return False
+
+        if not tour.addPlayer(player_id):
+            await RoomRequest.notification(self, "error",
+                    language.get(lang, "notif.error.title"),
+                    language.get(lang, "notif.error.tournament_full"))
+            return False
+
+        await self.client.addChannel(self, tour_id)
+        return True
+
+    """
     JOIN ROOM:
     
     Client need (valid auth / not in game / not already in this room)
@@ -126,23 +169,29 @@ class RoomConsumer(AsyncWebsocketConsumer):
         if not self.client.isAValidSession():
             await RoomRequest.notification(self, "error", "Fatal Error", "Login redirection")
             return False
-        if self.client.getInGame():
+
+        if not room_manager.isRoomIdExist(room_id):
             await RoomRequest.notification(self, "error",
                     language.get(lang, "notif.error.title"),
-                    language.get(lang, "notif.error.in_game_join"))
+                    language.get(lang, "notif.error.unknown_in_room"))
             return False
 
-        if room_manager.isRoomIdExist(room_id):
-            room = room_manager.getRoomById(room_id)
-            if not room.playerIdIsInRoom(player_id):
-                room.addPlayer(player_id)
-                await self.client.addChannel(self, room_id)
-                return True
-            else:
-                await RoomRequest.notification(self, "error",
+        room = room_manager.getRoomById(room_id)
+        if room.playerIdIsInRoom(player_id):
+            await RoomRequest.notification(self, "error",
                     language.get(lang, "notif.error.title"),
                     language.get(lang, "notif.error.already_in_room"))
-                return False
+            return False
+
+        if not room.addPlayer(player_id):
+            await RoomRequest.notification(self, "error",
+                    language.get(lang, "notif.error.title"),
+                    language.get(lang, "notif.error.game_full"))
+            return False
+
+        await self.client.addChannel(self, room_id)
+        return True
+
 
     async def sendToGroup(self, event):
         event_data = event.copy()

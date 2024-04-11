@@ -9,6 +9,8 @@ class RoomClient:
     player_id = ""
     in_a_room = False
     in_game = False
+    in_a_room_tour = False
+    in_game_tour = False
     lang = ""
     channels = []
 
@@ -18,6 +20,8 @@ class RoomClient:
         self. player_id = ""
         self.in_a_room = False
         self.in_game = False
+        self.in_a_room_tour = False
+        self.in_game_tour = False
         self.lang = "fr"
         self.channels = []
 
@@ -37,6 +41,12 @@ class RoomClient:
 
     def setInGame(self, status):
         self.in_game = status
+
+    def setInARoomTour(self, status):
+        self.in_a_room_tour = status
+
+    def setInGameTour(self, status):
+        self.in_game_tour = status
 
     def setLang(self, lang):
         self.lang = lang
@@ -68,6 +78,12 @@ class RoomClient:
 
     def getInGame(self):
         return self.in_game
+
+    def getInARoomTour(self):
+        return self.in_a_room_tour
+
+    def getInGameTour(self):
+        return self.in_game_tour
 
     def getLang(self):
         return self.lang
