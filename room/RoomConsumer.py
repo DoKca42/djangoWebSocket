@@ -107,7 +107,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 self.client.setInARoomTour(True)
                 await RoomRequest.waitingTour(waiting_tour, True)
                 if tournament_manager.getTournamentById(waiting_tour).getPlayerNb() == 4:
-                    waiting_tour.startTournament()
+                    tournament_manager.getTournamentById(waiting_tour).startTournament()
     """
     FIND MATCH:
     

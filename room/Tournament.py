@@ -1,5 +1,5 @@
+from room.Room import Room
 from room.RoomClientManager import room_client_manager
-from room.RoomManager import room_manager
 import uuid
 import time
 
@@ -16,13 +16,12 @@ class Tournament:
     def __init__(self):
         self.id = str(uuid.uuid4())
         self.created_date = int(time.time())
-        #ne doit pas utiliser le room_manager
-        self.demi_room_a = room_manager.createRoom()
-        self.demi_room_b = room_manager.createRoom()
-        self.final_room = room_manager.createRoom()
+
+        self.demi_room_a = Room()
+        self.demi_room_b = Room()
+        self.final_room = Room()
         self.players = []
         self.status = 0
-        print("Tournament created = "+self.id)
         pass
 
     def __upStatus(self):
@@ -40,7 +39,7 @@ class Tournament:
     # ======= SETTER =======
 
     def addPlayer(self, player_id):
-        if self.getPlayerNb() < 3:
+        if self.getPlayerNb() < 4:
             self.players.append(player_id)
             return True
         return False
@@ -67,6 +66,15 @@ class Tournament:
 
     def getPlayerNb(self):
         return len(self.players)
+
+    def getDemiRoomA(self):
+        return self.demi_room_a
+
+    def getDemiRoomB(self):
+        return self.demi_room_b
+
+    def getFinalRoom(self):
+        return self.final_room
 
     def playerIsInTournament(self, player_id):
         if player_id in self.players:

@@ -52,7 +52,7 @@ def debug_client(request):
 def debug_tournament(request):
     waiting_tour = tournament_manager.getWaitingTournament()
     in_game_tour = []
-    tours = room_manager.getRooms()
+    tours = tournament_manager.getTournaments()
     for tour in tours:
         if tour.getId() != waiting_tour:
             in_game_tour.append(tour)

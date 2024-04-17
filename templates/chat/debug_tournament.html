@@ -31,6 +31,16 @@
         font-style: italic;
         font-weight: normal;
     }
+
+    .room-int {
+        display: flex;
+        flex-direction: column;
+        padding: 10px 15px;
+        border-radius: 15px;
+        background: #a9a9a9;
+        width: fit-content;
+        margin: 10px;
+    }
 </style>
 </head>
 <body>
@@ -40,6 +50,30 @@
     <div class="container">
     <span><span class="index">Tour_id:</span>&ensp;&ensp;<span class="value">{{ tour.getId }}</span></span>
     <span><span class="index">Player_nb:</span>&ensp;&ensp;<span class="value">{{ tour.getPlayerNb }}</span></span>
+    <span><span class="index">Demi room A:</span>
+        <div class="room-int">
+            <span><span class="index">ID:</span>&ensp;&ensp;<span class="value">{{ tour.getDemiRoomA.getId }}</span></span>
+            <span><span class="index">Player_nb:</span>&ensp;&ensp;<span class="value">{{ tour.getDemiRoomA.getPlayerNb }}</span></span>
+            <span><span class="index">Player_id A:</span>&ensp;<span class="value">{{ tour.getDemiRoomA.getPlayerA }}</span></span>
+            <span><span class="index">Player_id B:</span>&ensp;<span class="value">{{ tour.getDemiRoomA.getPlayerB }}</span></span>
+        </div>
+    </span>
+    <span><span class="index">Demi room B:</span>
+        <div class="room-int">
+            <span><span class="index">ID:</span>&ensp;&ensp;<span class="value">{{ tour.getDemiRoomB.getId }}</span></span>
+            <span><span class="index">Player_nb:</span>&ensp;&ensp;<span class="value">{{ tour.getDemiRoomB.getPlayerNb }}</span></span>
+            <span><span class="index">Player_id A:</span>&ensp;<span class="value">{{ tour.getDemiRoomB.getPlayerA }}</span></span>
+            <span><span class="index">Player_id B:</span>&ensp;<span class="value">{{ tour.getDemiRoomB.getPlayerB }}</span></span>
+        </div>
+    </span>
+    <span><span class="index">Final room:</span>
+        <div class="room-int">
+            <span><span class="index">ID:</span>&ensp;&ensp;<span class="value">{{ tour.getDemiRoomA.getId }}</span></span>
+            <span><span class="index">Player_nb:</span>&ensp;&ensp;<span class="value">{{ tour.getFinalRoom.getPlayerNb }}</span></span>
+            <span><span class="index">Player_id A:</span>&ensp;<span class="value">{{ tour.getFinalRoom.getPlayerA }}</span></span>
+            <span><span class="index">Player_id B:</span>&ensp;<span class="value">{{ tour.getFinalRoom.getPlayerB }}</span></span>
+        </div>
+    </span>
 </div>
 {% endfor %}
 
@@ -50,6 +84,30 @@
 <div class="container">
     <span><span class="index">Tour_id:</span>&ensp;&ensp;<span class="value">{{ waiting_tour.getId }}</span></span>
     <span><span class="index">Player_nb:</span>&ensp;&ensp;<span class="value">{{ waiting_tour.getPlayerNb }}</span></span>
+    <span><span class="index">Demi room A:</span>
+        <div class="room-int">
+            <span><span class="index">ID:</span>&ensp;&ensp;<span class="value">{{ waiting_tour.getDemiRoomA.getId }}</span></span>
+            <span><span class="index">Player_nb:</span>&ensp;&ensp;<span class="value">{{ waiting_tour.getDemiRoomA.getPlayerNb }}</span></span>
+            <span><span class="index">Player_id A:</span>&ensp;<span class="value">{{ waiting_tour.getDemiRoomA.getPlayerA }}</span></span>
+            <span><span class="index">Player_id B:</span>&ensp;<span class="value">{{ waiting_tour.getDemiRoomA.getPlayerB }}</span></span>
+        </div>
+    </span>
+    <span><span class="index">Demi room B:</span>
+        <div class="room-int">
+            <span><span class="index">ID:</span>&ensp;&ensp;<span class="value">{{ waiting_tour.getDemiRoomB.getId }}</span></span>
+            <span><span class="index">Player_nb:</span>&ensp;&ensp;<span class="value">{{ waiting_tour.getDemiRoomB.getPlayerNb }}</span></span>
+            <span><span class="index">Player_id A:</span>&ensp;<span class="value">{{ waiting_tour.getDemiRoomB.getPlayerA }}</span></span>
+            <span><span class="index">Player_id B:</span>&ensp;<span class="value">{{ waiting_tour.getDemiRoomB.getPlayerB }}</span></span>
+        </div>
+    </span>
+    <span><span class="index">Final room:</span>
+        <div class="room-int">
+            <span><span class="index">ID:</span>&ensp;&ensp;<span class="value">{{ waiting_tour.getDemiRoomA.getId }}</span></span>
+            <span><span class="index">Player_nb:</span>&ensp;&ensp;<span class="value">{{ waiting_tour.getFinalRoom.getPlayerNb }}</span></span>
+            <span><span class="index">Player_id A:</span>&ensp;<span class="value">{{ waiting_tour.getFinalRoom.getPlayerA }}</span></span>
+            <span><span class="index">Player_id B:</span>&ensp;<span class="value">{{ waiting_tour.getFinalRoom.getPlayerB }}</span></span>
+        </div>
+    </span>
 </div>
 {% endif %}
 <script type="text/javascript">
