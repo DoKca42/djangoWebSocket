@@ -23,5 +23,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', room.views.lobby),
     path('debug_room', room.views.debug_room),
-    path('debug_client', room.views.debug_client)
+    path('debug_client', room.views.debug_client),
+    path('debug_tournament', room.views.debug_tournament)
 ]

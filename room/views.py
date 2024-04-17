@@ -2,6 +2,7 @@ from django.shortcuts import render
 
 from room.RoomClientManager import room_client_manager
 from room.RoomManager import room_manager
+from room.TournamentManager import tournament_manager
 
 
 # Create your views here.
@@ -46,3 +47,15 @@ def debug_client(request):
                   {
                       "clients_lst": clients_lst,
                   })
+
+
+def debug_tournament(request):
+    waiting_room = room_manager.getWaitingRoom()
+    in_game_room = []
+    rooms = room_manager.getRooms()
+    for room in rooms:
+        if room.getId() != waiting_room:
+            in_game_room.append(room)
+    if waiting_room:
+        waiting_room = room_manager.getRoomById(waiting_room)
+    return render(request, "chat/debug_tournament.html")

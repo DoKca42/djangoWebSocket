@@ -24,6 +24,8 @@ class Matchmaking {
                 this.#sendAuth();
             else if (data["type"] === "waiting_match")
                 waitGame(data["status"]);
+            else if (data["type"] === "waiting_tour")
+                waitTour(data["status"]);
             else if (data["type"] === "notification")
             {
                 if (data["category"] === "error")
@@ -45,6 +47,15 @@ class Matchmaking {
             type: "matchmaking",
             action: "find_game",
             "ia_game": "none",
+            player_id: player_id
+        }))
+    }
+
+    findTour()
+    {
+        this.#socket.send(JSON.stringify({
+            type: "matchmaking",
+            action: "find_tournament",
             player_id: player_id
         }))
     }

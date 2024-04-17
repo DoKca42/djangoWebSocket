@@ -10,7 +10,7 @@ class TournamentManager:
         self.tournaments.append(tournament)
         return tournament.getId()
 
-    def getTournament(self):
+    def getTournaments(self):
         return self.tournaments
 
     def isTournamentIdExist(self, tournamentId):

@@ -73,3 +73,15 @@ class RoomRequest:
                 "player_nb": player_nb
             }
         )
+
+    @staticmethod
+    async def waitingTour(room_group_name, status):
+        channel_layer = get_channel_layer()
+        await channel_layer.group_send(
+            room_group_name,
+            {
+                "type": "sendToGroup",
+                "rq_type": "waiting_tour",
+                "status": status
+            }
+        )
