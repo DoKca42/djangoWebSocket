@@ -36,25 +36,20 @@
 <body>
 
 <h1>In Game Tour:</h1>
-{% for room in in_game_room %}
+{% for tour in in_game_tour %}
     <div class="container">
-    <span><span class="index">Room_id:</span>&ensp;&ensp;<span class="value">{{ room.getId }}</span></span>
-    <span><span class="index">Is_IA:</span>&ensp;&ensp;<span class="value">{{ room.getGameIa }}</span></span>
-    <span><span class="index">Player_nb:</span>&ensp;&ensp;<span class="value">{{ room.getPlayerNb }}</span></span>
-    <span><span class="index">Player_id A:</span>&ensp;<span class="value">{{ room.getPlayerA }}</span></span>
-    <span><span class="index">Player_id B:</span>&ensp;<span class="value">{{ room.getPlayerB }}</span></span>
+    <span><span class="index">Tour_id:</span>&ensp;&ensp;<span class="value">{{ tour.getId }}</span></span>
+    <span><span class="index">Player_nb:</span>&ensp;&ensp;<span class="value">{{ tour.getPlayerNb }}</span></span>
 </div>
 {% endfor %}
 
 <br>
 
 <h1>Waiting Tour:</h1>
-{% if waiting_room != False %}
+{% if waiting_tour != False %}
 <div class="container">
-    <span><span class="index">Room_id:</span>&ensp;&ensp;<span class="value">{{ waiting_room.getId }}</span></span>
-    <span><span class="index">Player_nb:</span>&ensp;&ensp;<span class="value">{{ waiting_room.getPlayerNb }}</span></span>
-    <span><span class="index">Player_id A:</span>&ensp;<span class="value">{{ waiting_room.getPlayerA }}</span></span>
-    <span><span class="index">Player_id B:</span>&ensp;<span class="value">{{ waiting_room.getPlayerB }}</span></span>
+    <span><span class="index">Tour_id:</span>&ensp;&ensp;<span class="value">{{ waiting_tour.getId }}</span></span>
+    <span><span class="index">Player_nb:</span>&ensp;&ensp;<span class="value">{{ waiting_tour.getPlayerNb }}</span></span>
 </div>
 {% endif %}
 <script type="text/javascript">

@@ -16,11 +16,13 @@ class Tournament:
     def __init__(self):
         self.id = str(uuid.uuid4())
         self.created_date = int(time.time())
+        #ne doit pas utiliser le room_manager
         self.demi_room_a = room_manager.createRoom()
         self.demi_room_b = room_manager.createRoom()
         self.final_room = room_manager.createRoom()
         self.players = []
         self.status = 0
+        print("Tournament created = "+self.id)
         pass
 
     def __upStatus(self):
