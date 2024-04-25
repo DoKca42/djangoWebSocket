@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+import api.views
 import room.views
 
 urlpatterns = [
@@ -24,5 +25,6 @@ urlpatterns = [
     path('', room.views.lobby),
     path('debug_room', room.views.debug_room),
     path('debug_client', room.views.debug_client),
-    path('debug_tournament', room.views.debug_tournament)
+    path('debug_tournament', room.views.debug_tournament),
+    path('api/match_result/', api.views.match_result)
 ]

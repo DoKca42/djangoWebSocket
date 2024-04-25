@@ -3,6 +3,8 @@ from room.RoomClientManager import room_client_manager
 import uuid
 import time
 
+from room.UniqId import Uniqid
+
 
 class Tournament:
     id = 0
@@ -14,7 +16,7 @@ class Tournament:
     status = 0          # 0: waiting | 1: tournament start | 2: end demi | 3: end final
 
     def __init__(self):
-        self.id = str(uuid.uuid4())
+        self.id = Uniqid.generate()
         self.created_date = int(time.time())
 
         self.demi_room_a = Room()

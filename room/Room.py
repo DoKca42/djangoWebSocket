@@ -2,6 +2,7 @@ import uuid
 import time
 
 from room.RoomClientManager import room_client_manager
+from room.UniqId import Uniqid
 
 
 class Room:
@@ -17,7 +18,7 @@ class Room:
     game_ia = False
 
     def __init__(self):
-        self.id = str(uuid.uuid4())
+        self.id = Uniqid.generate()
         self.player_id_a = ""
         self.player_id_b = ""
         self.score_player_a = 0
