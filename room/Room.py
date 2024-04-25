@@ -1,6 +1,7 @@
 import uuid
 import time
 
+from api.PostRequest import PostRequest
 from room.RoomClientManager import room_client_manager
 from room.UniqId import Uniqid
 
@@ -60,6 +61,7 @@ class Room:
 
     def setGameStarted(self):
         self.game_started = True
+        PostRequest.matchRoom(self.getGameAsJSON())
 
     def setGameIa(self, ia):
         self.game_ia = ia
@@ -108,6 +110,15 @@ class Room:
 
     def getGameIa(self):
         return self.game_ia
+
+    def getGameAsJSON(self):
+        obj = {
+            "match_id": self.id,
+            "tournament_id": 0,
+            "player1_id": self.getPlayerA(),
+            "player2_id": self.getPlayerB()
+        }
+        return obj
 
     def playerIdIsInRoom(self, player_id):
         if self.player_id_a == player_id or self.player_id_b == player_id:

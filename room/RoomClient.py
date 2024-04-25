@@ -1,6 +1,8 @@
 from room.ClientChannel import ClientChannel
 from room.RoomManager import room_manager
 from room.RoomRequest import RoomRequest
+from room.TournamentManager import tournament_manager
+from room.UniqId import Uniqid
 
 
 class RoomClient:
@@ -11,6 +13,7 @@ class RoomClient:
     in_game = False
     in_a_room_tour = False
     in_game_tour = False
+    waiting_time = 0
     lang = ""
     channels = []
 
@@ -22,6 +25,7 @@ class RoomClient:
         self.in_game = False
         self.in_a_room_tour = False
         self.in_game_tour = False
+        self.waiting_time = 0
         self.lang = "fr"
         self.channels = []
 
@@ -37,12 +41,14 @@ class RoomClient:
         self.player_id = player_id
 
     def setInARoom(self, status):
+        self.waiting_time = Uniqid.getUnixTimeStamp()
         self.in_a_room = status
 
     def setInGame(self, status):
         self.in_game = status
 
     def setInARoomTour(self, status):
+        self.waiting_time = Uniqid.getUnixTimeStamp()
         self.in_a_room_tour = status
 
     def setInGameTour(self, status):
@@ -91,6 +97,12 @@ class RoomClient:
     def getChannels(self):
         return self.channels
 
+    def getWaitingTime(self):
+        result = Uniqid.getUnixTimeStamp() - self.waiting_time
+        if result < 0 or result > 3600:
+            result = 0
+        return result
+
     # ======= OTHER =======
 
     def isAValidSession(self):
@@ -107,6 +119,10 @@ class RoomClient:
         for channel in self.channels:
             await obj.channel_layer.group_discard(channel, obj.channel_name)
             await obj.channel_layer.group_add(channel, obj.channel_name)
+
             if room_manager.isRoomIdExist(channel) and room_manager.getRoomById(channel).isWaiting():
-                await RoomRequest.waitingMatch(channel, True)
+                await RoomRequest.waitingMatch(channel, True, self.getWaitingTime())
+            elif tournament_manager.isTournamentIdExist(channel) \
+                    and tournament_manager.getTournamentById(channel).isWaiting():
+                await RoomRequest.waitingTour(channel, True, self.getWaitingTime())
 

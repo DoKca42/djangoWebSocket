@@ -9,6 +9,7 @@ from threading import Thread
 class PostSaver:
     def __init__(self):
         self.posts_result_match = []
+        self.posts_room_match = []
         thread = Thread(target=self.retryLoop)
         thread.daemon = True
         thread.start()
@@ -17,9 +18,15 @@ class PostSaver:
         if post not in self.posts_result_match:
             self.posts_result_match.append(post)
 
+    def addPostRoomMatch(self, post):
+        if post not in self.posts_room_match:
+            self.posts_room_match.append(post)
+
     def tryPosts(self):
         for post in self.posts_result_match:
-            PostRequest.match(post)
+            PostRequest.matchResult(post)
+        for post in self.posts_room_match:
+            PostRequest.matchRoom(post)
 
     def retryLoop(self):
         while True:
@@ -37,11 +44,21 @@ post_saver = PostSaver()
 class PostRequest:
 
     @staticmethod
-    def match(match):
+    def matchResult(match):
         try:
             host = "http://k12r4p6:8000"
             url = host + '/match/post/'
             x = requests.post(url, json=match)
         except Exception as e:
             post_saver.addPostResultMatch(match)
-            print(fg.red + "[API] PostRequest Error: " + fg.white + str(e))
+            print(fg.red + "[API] Post 'matchResult' Error: " + fg.white + str(e))
+
+    @staticmethod
+    def matchRoom(match):
+        try:
+            host = "http://k12r4p6:8000"
+            url = host + '/match/post/'
+            x = requests.post(url, json=match)
+        except Exception as e:
+            post_saver.addPostRoomMatch(match)
+            print(fg.red + "[API] Post 'matchRoom' Error: " + fg.white + str(e))

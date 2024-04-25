@@ -23,9 +23,11 @@ class Matchmaking {
             if (data["type"] === "connection_etalished")
                 this.#sendAuth();
             else if (data["type"] === "waiting_match")
-                waitGame(data["status"]);
+                waitGame(data);
             else if (data["type"] === "waiting_tour")
-                waitTour(data["status"]);
+                waitTour(data);
+            else if (data["type"] === "matchmaking_canceled")
+                waitCancel()
             else if (data["type"] === "notification")
             {
                 if (data["category"] === "error")
@@ -60,6 +62,14 @@ class Matchmaking {
         }))
     }
 
+    cancelMM()
+    {
+        this.#socket.send(JSON.stringify({
+            type: "matchmaking",
+            action: "cancel",
+            player_id: player_id
+        }))
+    }
 
     #sendAuth()
     {

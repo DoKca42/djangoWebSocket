@@ -10,7 +10,7 @@ def lobby(request):
     rooms = room_manager.getRooms()
     for room in rooms:
         print("{VIEW} " + room.getId())
-    return render(request, "chat/lobby.html",
+    return render(request, "room/play.html",
                   {"rooms": rooms})
 
 

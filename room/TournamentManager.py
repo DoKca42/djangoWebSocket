@@ -10,6 +10,13 @@ class TournamentManager:
         self.tournaments.append(tournament)
         return tournament.getId()
 
+    def removeTournamentById(self, tournamentId):
+        initial_len = len(self.tournaments)
+        self.tournaments = [tournament for tournament in self.tournaments if tournament.getId() != tournamentId]
+        if len(self.tournaments) == initial_len:
+            return False
+        return True
+
     def getTournaments(self):
         return self.tournaments
 

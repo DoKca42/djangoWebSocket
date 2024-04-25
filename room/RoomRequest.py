@@ -24,14 +24,15 @@ class RoomRequest:
             }))
 
     @staticmethod
-    async def waitingMatch(room_group_name, status):
+    async def waitingMatch(room_group_name, status, time):
         channel_layer = get_channel_layer()
         await channel_layer.group_send(
             room_group_name,
             {
                 "type": "sendToGroup",
                 "rq_type": "waiting_match",
-                "status": status
+                "status": status,
+                "waiting_time": time
             }
         )
 
@@ -75,13 +76,21 @@ class RoomRequest:
         )
 
     @staticmethod
-    async def waitingTour(room_group_name, status):
+    async def waitingTour(room_group_name, status, time):
         channel_layer = get_channel_layer()
         await channel_layer.group_send(
             room_group_name,
             {
                 "type": "sendToGroup",
                 "rq_type": "waiting_tour",
-                "status": status
+                "status": status,
+                "waiting_time": time
             }
         )
+
+    @staticmethod
+    async def mmCanceled(obj):
+        await obj.send(
+            text_data=json.dumps({
+                "type": "matchmaking_canceled",
+            }))

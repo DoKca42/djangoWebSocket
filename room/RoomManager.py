@@ -10,6 +10,13 @@ class RoomManager:
         self.rooms.append(room)
         return room.getId()
 
+    def removeRoomById(self, roomId):
+        initial_len = len(self.rooms)
+        self.rooms = [room for room in self.rooms if room.getId() != roomId]
+        if len(self.rooms) == initial_len:
+            return False
+        return True
+
     def getRooms(self):
         return self.rooms
 

@@ -16,7 +16,7 @@ def match_result(request):
         valid_data = data.validated_data
         if valid_data["tournament_id"] == 0:
             valid_data["timestamp"] = Uniqid.getUnixTimeStamp()
-            PostRequest.match(valid_data)
+            PostRequest.matchResult(valid_data)
         else:
             pass
         return Response(data=data.data, status=status.HTTP_200_OK)

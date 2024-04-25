@@ -68,6 +68,11 @@ class RoomConsumer(AsyncWebsocketConsumer):
         if not self.client.isAValidSession():
             await RoomRequest.notification(self, "error", "Fatal Error", "Login redirection")
             return
+
+        if data["action"] == "cancel":
+            await self.mm_cancel()
+            return
+
         if self.client.getInGame() or self.client.getInGameTour():
             await RoomRequest.notification(self, "error",
                     language.get(lang, "notif.error.title"),
@@ -90,6 +95,34 @@ class RoomConsumer(AsyncWebsocketConsumer):
             await self.mm_findTournament()
 
     """
+    CANCEL MATCHMAKING:
+
+    Client need (depend on clientMatchmaking)
+    """
+    async def mm_cancel(self):
+        if self.client.isInARoom():
+            waiting_room = room_manager.getWaitingRoom()
+            if waiting_room is not False:
+                room = room_manager.getRoomById(waiting_room)
+                if room.playerIdIsInRoom(self.client.getPlayerId()):
+                    await RoomRequest.mmCanceled(self)
+                    self.client.setInARoom(False)
+                    await self.client.removeChannel(self, waiting_room)
+                    room_manager.removeRoomById(waiting_room)
+            return
+
+        if self.client.getInARoomTour():
+            waiting_tour = tournament_manager.getWaitingTournament()
+            if waiting_tour is not False:
+                tour = tournament_manager.getTournamentById(waiting_tour)
+                if tour.playerIsInTournament(self.client.getPlayerId()):
+                    await RoomRequest.mmCanceled(self)
+                    self.client.setInARoomTour(False)
+                    await self.client.removeChannel(self, waiting_tour)
+                    tournament_manager.removeTournamentById(waiting_tour)
+            return
+
+    """
     FIND TOURNAMENT:
 
     Client need (depend on clientMatchmaking)
@@ -100,12 +133,13 @@ class RoomConsumer(AsyncWebsocketConsumer):
         if waiting_tour is False:
             waiting_tour = tournament_manager.createTournament()
             await self.clientJoinTournament(waiting_tour, self.client.getPlayerId())
-            await RoomRequest.waitingTour(waiting_tour, True)
             self.client.setInARoomTour(True)
+            await RoomRequest.waitingTour(waiting_tour, True, self.client.getWaitingTime())
+
         else:
             if await self.clientJoinTournament(waiting_tour, self.client.getPlayerId()):
                 self.client.setInARoomTour(True)
-                await RoomRequest.waitingTour(waiting_tour, True)
+                await RoomRequest.waitingTour(waiting_tour, True, self.client.getWaitingTime())
                 if tournament_manager.getTournamentById(waiting_tour).getPlayerNb() == 4:
                     tournament_manager.getTournamentById(waiting_tour).startTournament()
     """
@@ -119,14 +153,14 @@ class RoomConsumer(AsyncWebsocketConsumer):
         if waiting_room is False:
             waiting_room = room_manager.createRoom()
             await self.clientJoinRoom(waiting_room, self.client.getPlayerId())
-            await RoomRequest.waitingMatch(waiting_room, True)
             self.client.setInARoom(True)
+            await RoomRequest.waitingMatch(waiting_room, True, self.client.getWaitingTime())
         else:
             if await self.clientJoinRoom(waiting_room, self.client.getPlayerId()):
                 room_manager.getRoomById(waiting_room).setGameStarted()
-                await RoomRequest.foundMatch(waiting_room, waiting_room)
-                await RoomRequest.waitingMatch(waiting_room, False)
                 self.client.setInARoom(True)
+                await RoomRequest.foundMatch(waiting_room, waiting_room)
+                await RoomRequest.waitingMatch(waiting_room, False, self.client.getWaitingTime())
                 room_manager.getRoomById(waiting_room).setAllPlayersInGameStatus(True)
 
     """

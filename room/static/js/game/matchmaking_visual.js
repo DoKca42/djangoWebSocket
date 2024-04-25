@@ -1,15 +1,34 @@
-function waitGame(status)
+function waitGame(data)
 {
-    if (status === true)
-        document.getElementById("find_game_loader").style.display = "flex";
-    else
-        document.getElementById("find_game_loader").style.display = "none";
+    join("match");
+    waiting_time = data["waiting_time"]
+    /*
+    if (data["status"] === true)
+    {
+        join("match");
+        waiting_time = data["waiting_time"]
+    }
+    */
+
 }
 
-function waitTour(status)
+function waitTour(data)
 {
-    if (status === true)
-        document.getElementById("find_tour_loader").style.display = "flex";
-    else
-        document.getElementById("find_tour_loader").style.display = "none";
+    join("tournament");
+        waiting_time = data["waiting_time"]
+    /*
+    if (data["status"] === true)
+    {
+        join("tournament");
+        waiting_time = data["waiting_time"]
+    }
+    */
+}
+
+function waitCancel()
+{
+    document.getElementById("play_page_buttons").style.display = "flex";
+    document.getElementById("play_page_queue").style.display = "none";
+    clearInterval(waitingInterval);
+    waiting_time = 0;
 }

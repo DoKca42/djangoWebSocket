@@ -14,11 +14,11 @@ class Uniqid:
     def getUnixTimeStamp():
         now_utc = datetime.now(timezone.utc)
         unix_timestamp = int(now_utc.timestamp())
-        return str(unix_timestamp)
+        return unix_timestamp
 
     @staticmethod
     def generate():
         uniqid = Uniqid.__getRandom() + Uniqid.__getRandom()
-        uniqid += Uniqid.getUnixTimeStamp()
+        uniqid += str(Uniqid.getUnixTimeStamp())
         uniqid += Uniqid.__getRandom() + Uniqid.__getRandom()
         return uniqid
