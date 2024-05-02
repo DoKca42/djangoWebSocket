@@ -1,12 +1,13 @@
 import time
 
 import requests
-from sty import fg, bg, ef, rs
-import asyncio
+
+from Log.Log import Log
+from api.urls_api import BLOCKCHAIN_URL, BLOCKCHAIN_HOST
 from threading import Thread
 
 
-class PostSaver:
+class PostRequest:
     def __init__(self):
         self.posts_result_match = []
         self.posts_room_match = []
@@ -23,10 +24,11 @@ class PostSaver:
             self.posts_room_match.append(post)
 
     def tryPosts(self):
+        Log.debug("[API] TRY'", "")
         for post in self.posts_result_match:
-            PostRequest.matchResult(post)
+            self.matchResult(post)
         for post in self.posts_room_match:
-            PostRequest.matchRoom(post)
+            self.matchRoom(post)
 
     def retryLoop(self):
         while True:
@@ -37,28 +39,28 @@ class PostSaver:
         for post in self.posts_result_match:
             print(post)
 
+    # =========== SEND ===========
 
-post_saver = PostSaver()
-
-
-class PostRequest:
-
-    @staticmethod
-    def matchResult(match):
+    def matchResult(self, match):
         try:
-            host = "http://k12r4p6:8000"
+            host = BLOCKCHAIN_URL+":"+BLOCKCHAIN_HOST
             url = host + '/match/post/'
             x = requests.post(url, json=match)
+            Log.info("[API] Post 'matchResult'", x)
         except Exception as e:
-            post_saver.addPostResultMatch(match)
-            print(fg.red + "[API] Post 'matchResult' Error: " + fg.white + str(e))
+            self.addPostResultMatch(match)
+            Log.error("[API] Post 'matchResult' Error", e)
 
-    @staticmethod
-    def matchRoom(match):
+    def matchRoom(self, match):
         try:
-            host = "http://k12r4p6:8000"
+            host = BLOCKCHAIN_URL+":"+BLOCKCHAIN_HOST
             url = host + '/match/post/'
             x = requests.post(url, json=match)
+            Log.info("[API] Post 'matchRoom'", x)
         except Exception as e:
-            post_saver.addPostRoomMatch(match)
-            print(fg.red + "[API] Post 'matchRoom' Error: " + fg.white + str(e))
+            self.addPostRoomMatch(match)
+            Log.error("[API] Post 'matchRoom' Error", e)
+
+
+post_request = PostRequest()
+

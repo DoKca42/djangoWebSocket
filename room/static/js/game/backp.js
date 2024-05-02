@@ -39,7 +39,7 @@
             }
             else if (data["action"] === "player_join")
             {
-                //console.log(data["room_id"]);
+                //Log.log(data["room_id"]);
                document.getElementById(data["room_id"]).textContent = data["player_nb"]+" Player - ("+data["room_id"]+")";
             }
         }

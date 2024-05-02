@@ -4,7 +4,7 @@ from rest_framework.views import status
 from rest_framework.decorators import api_view
 
 from room.UniqId import Uniqid
-from .PostRequest import PostRequest
+from .PostRequest import post_request
 from .serializer import MatchResultSerializer
 
 
@@ -16,7 +16,7 @@ def match_result(request):
         valid_data = data.validated_data
         if valid_data["tournament_id"] == 0:
             valid_data["timestamp"] = Uniqid.getUnixTimeStamp()
-            PostRequest.matchResult(valid_data)
+            post_request.addPostResultMatch(valid_data)
         else:
             pass
         return Response(data=data.data, status=status.HTTP_200_OK)
