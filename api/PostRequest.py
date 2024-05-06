@@ -1,8 +1,10 @@
+import json
 import time
 
 import requests
 
 from Log.Log import Log
+from api.Signature import Signature
 from api.urls_api import BLOCKCHAIN_URL, BLOCKCHAIN_HOST
 from threading import Thread
 
@@ -23,8 +25,16 @@ class PostRequest:
         if post not in self.posts_room_match:
             self.posts_room_match.append(post)
 
+    def removePostResultMatch(self, post):
+        if post in self.posts_result_match:
+            self.posts_result_match.remove(post)
+
+    def removePostRoomMatch(self, post):
+        if post in self.posts_room_match:
+            self.posts_room_match.remove(post)
+
     def tryPosts(self):
-        Log.debug("[API] TRY'", "")
+        #Log.debug("[API] TRY", "")
         for post in self.posts_result_match:
             self.matchResult(post)
         for post in self.posts_room_match:
@@ -43,24 +53,34 @@ class PostRequest:
 
     def matchResult(self, match):
         try:
-            host = BLOCKCHAIN_URL+":"+BLOCKCHAIN_HOST
+            data, signature = Signature.create_signed_token(match)
+            data = json.loads(data.decode('utf-8'))
+            signature = signature
+            Log.debug("[API] data", str(data))
+            Log.debug("[API] signature", str(signature))
+            headers = {"Authorization": str(signature)}
+            host = BLOCKCHAIN_URL + ":" + BLOCKCHAIN_HOST
             url = host + '/match/post/'
-            x = requests.post(url, json=match)
+            x = requests.post(url, json=data, headers=headers)
             Log.info("[API] Post 'matchResult'", x)
+            self.removePostResultMatch(match)
         except Exception as e:
-            self.addPostResultMatch(match)
             Log.error("[API] Post 'matchResult' Error", e)
 
     def matchRoom(self, match):
         try:
-            host = BLOCKCHAIN_URL+":"+BLOCKCHAIN_HOST
-            url = host + '/match/post/'
-            x = requests.post(url, json=match)
+            data, signature = Signature.create_signed_token(match)
+            data = json.loads(data.decode('utf-8'))
+            signature = signature.hex()
+
+            headers = {"Authorization": str(signature)}
+            host = BLOCKCHAIN_URL + ":" + BLOCKCHAIN_HOST
+            url = host + '/match/create/'
+            x = requests.post(url, json=data, headers=headers)
             Log.info("[API] Post 'matchRoom'", x)
+            self.removePostRoomMatch(match)
         except Exception as e:
-            self.addPostRoomMatch(match)
             Log.error("[API] Post 'matchRoom' Error", e)
 
 
 post_request = PostRequest()
-

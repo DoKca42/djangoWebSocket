@@ -1,4 +1,3 @@
-from room.ClientChannel import ClientChannel
 from room.RoomManager import room_manager
 from room.RoomRequest import RoomRequest
 from room.TournamentManager import tournament_manager

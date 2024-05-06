@@ -2,7 +2,6 @@ import json
 
 from channels.generic.websocket import AsyncWebsocketConsumer
 from language.Language import language
-from room.ClientChannel import ClientChannel
 from room.RoomManager import room_manager
 from room.RoomClient import RoomClient
 from room.RoomRequest import RoomRequest
