@@ -5,7 +5,7 @@ import requests
 
 from Log.Log import Log
 from api.Signature import Signature
-from api.urls_api import BLOCKCHAIN_URL, BLOCKCHAIN_HOST
+from api.urls_api import BLOCKCHAIN_URL, BLOCKCHAIN_HOST, GAMEENGINE_HOST, GAMEENGINE_URL
 from threading import Thread
 
 
@@ -54,10 +54,9 @@ class PostRequest:
     def matchResult(self, match):
         try:
             data, signature = Signature.create_signed_token(match)
-            data = json.loads(data.decode('utf-8'))
-            signature = signature
-            Log.debug("[API] data", str(data))
-            Log.debug("[API] signature", str(signature))
+
+            #Log.debug("[API] data", str(data))
+            #Log.debug("[API] signature", str(signature))
             headers = {"Authorization": str(signature)}
             host = BLOCKCHAIN_URL + ":" + BLOCKCHAIN_HOST
             url = host + '/match/post/'
@@ -70,11 +69,9 @@ class PostRequest:
     def matchRoom(self, match):
         try:
             data, signature = Signature.create_signed_token(match)
-            data = json.loads(data.decode('utf-8'))
-            signature = signature.hex()
 
             headers = {"Authorization": str(signature)}
-            host = BLOCKCHAIN_URL + ":" + BLOCKCHAIN_HOST
+            host = GAMEENGINE_URL + ":" + GAMEENGINE_HOST
             url = host + '/match/create/'
             x = requests.post(url, json=data, headers=headers)
             Log.info("[API] Post 'matchRoom'", x)

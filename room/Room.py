@@ -1,7 +1,7 @@
 import uuid
 import time
 
-from api.PostRequest import PostRequest
+from api.PostRequest import PostRequest, post_request
 from room.RoomClientManager import room_client_manager
 from room.UniqId import Uniqid
 
@@ -61,7 +61,7 @@ class Room:
 
     def setGameStarted(self):
         self.game_started = True
-        PostRequest.matchRoom(self.getGameAsJSON())
+        post_request.addPostRoomMatch(self.getGameAsJSON())
 
     def setGameIa(self, ia):
         self.game_ia = ia

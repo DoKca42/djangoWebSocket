@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import status
 from rest_framework.decorators import api_view
 
+from room.RoomManager import room_manager
 from room.UniqId import Uniqid
 from .PostRequest import post_request
 from .serializer import MatchResultSerializer
@@ -15,8 +16,12 @@ def match_result(request):
     if data.is_valid():
         valid_data = data.validated_data
         if valid_data["tournament_id"] == 0:
+            if not room_manager.isRoomIdExist(valid_data["match_id"]):
+                error_message = "Unknown match id"
+                return Response(error_message, status=status.HTTP_400_BAD_REQUEST)
             valid_data["timestamp"] = Uniqid.getUnixTimeStamp()
             post_request.addPostResultMatch(valid_data)
+            room_manager.removeRoomById(valid_data["match_id"])
         else:
             pass
         return Response(data=data.data, status=status.HTTP_200_OK)
