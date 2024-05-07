@@ -13,7 +13,7 @@ class Tournament:
     demi_room_b = None
     final_room = None
     players = []
-    status = 0          # 0: waiting | 1: tournament start | 2: end demi | 3: end final
+    status = 0          # 0: waiting | 1: tournament start | 2: end of one demi game | 3: end of all demi game
 
     def __init__(self):
         self.id = Uniqid.generate()
@@ -87,3 +87,11 @@ class Tournament:
         if self.getPlayerNb() != 4:
             return True
         return False
+
+    def isRoomExistsById(self, room_id):
+        if self.final_room.getId() == room_id:
+            return True
+        if self.demi_room_a.getId() == room_id:
+            return True
+        if self.demi_room_b.getId() == room_id:
+            return True

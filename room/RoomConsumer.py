@@ -138,9 +138,12 @@ class RoomConsumer(AsyncWebsocketConsumer):
         else:
             if await self.clientJoinTournament(waiting_tour, self.client.getPlayerId()):
                 self.client.setInARoomTour(True)
-                await RoomRequest.waitingTour(waiting_tour, True, self.client.getWaitingTime())
                 if tournament_manager.getTournamentById(waiting_tour).getPlayerNb() == 4:
                     tournament_manager.getTournamentById(waiting_tour).startTournament()
+                    self.client.setInGameTour(True)
+                    await RoomRequest.waitingTour(waiting_tour, False, self.client.getWaitingTime())
+                else:
+                    await RoomRequest.waitingTour(waiting_tour, True, self.client.getWaitingTime())
     """
     FIND MATCH:
     
