@@ -39,7 +39,10 @@ class Signature:
             hashes.SHA256()
         )
         signature_encoded = base64.b64encode(signature).decode('utf-8')
-        headers = {"Authorization": str(signature),
+        headers = {"Authorization": str(signature_encoded),
                    "TransactionId": str(Uniqid.generate()),
                    "Expires": (datetime.utcnow() + timedelta(minutes=10)).isoformat()}
+        Log.debug("[API] data", data)
+        Log.debug("[API] signature_encoded", signature_encoded)
+        Log.debug("[API] headers", headers)
         return data, signature_encoded, headers

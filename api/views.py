@@ -18,12 +18,13 @@ def match_result(request):
     if data.is_valid():
         valid_data = data.validated_data
         if valid_data["tournament_id"] == 0:
-            if not room_manager.isRoomIdExist(str(valid_data["match_id"])):
-                error_message = "Unknown match id"
-                return Response(error_message, status=status.HTTP_400_BAD_REQUEST)
+            #if not room_manager.isRoomIdExist(str(valid_data["match_id"])):
+            #    error_message = "Unknown match id"
+            #    return Response(error_message, status=status.HTTP_400_BAD_REQUEST)
             valid_data["timestamp"] = Uniqid.getUnixTimeStamp()
             post_request.addPostResultMatch(valid_data)
             room_manager.removeRoomById(valid_data["match_id"])
+            return Response(data=data.data, status=status.HTTP_200_OK)
         else:
             if not tournament_manager.isTournamentIdExist(str(valid_data["tournament_id"])):
                 error_message = "Unknown tournament id"
@@ -37,8 +38,6 @@ def match_result(request):
             tour.setRoomResult(str(valid_data["match_id"]), valid_data)
             if tour.status == 4:
                 tournament_manager.removeTournamentById(str(valid_data["tournament_id"]))
-
             return Response(data=data.data, status=status.HTTP_200_OK)
-        return Response(data=data.data, status=status.HTTP_400_BAD_REQUEST)
     else:
         return Response(data.errors, status=status.HTTP_400_BAD_REQUEST)
