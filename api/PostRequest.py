@@ -7,11 +7,15 @@ from Log.Log import Log
 from api.Signature import Signature
 from api.urls_api import BLOCKCHAIN_URL, BLOCKCHAIN_HOST, GAMEENGINE_HOST, GAMEENGINE_URL
 from threading import Thread
+from datetime import datetime, timedelta
+
+from room.UniqId import Uniqid
 
 
 class PostRequest:
     def __init__(self):
         self.posts_result_match = []
+        self.posts_result_tour = []
         self.posts_room_match = []
         thread = Thread(target=self.retryLoop)
         thread.daemon = True
@@ -21,6 +25,10 @@ class PostRequest:
         if post not in self.posts_result_match:
             self.posts_result_match.append(post)
 
+    def addPostResultTour(self, post):
+        if post not in self.posts_result_tour:
+            self.posts_result_tour.append(post)
+
     def addPostRoomMatch(self, post):
         if post not in self.posts_room_match:
             self.posts_room_match.append(post)
@@ -29,14 +37,19 @@ class PostRequest:
         if post in self.posts_result_match:
             self.posts_result_match.remove(post)
 
+    def removePostResultTour(self, post):
+        if post in self.posts_result_tour:
+            self.posts_result_tour.remove(post)
+
     def removePostRoomMatch(self, post):
         if post in self.posts_room_match:
             self.posts_room_match.remove(post)
 
     def tryPosts(self):
-        #Log.debug("[API] TRY", "")
         for post in self.posts_result_match:
             self.matchResult(post)
+        for post in self.posts_result_tour:
+            self.tourResult(post)
         for post in self.posts_room_match:
             self.matchRoom(post)
 
@@ -45,19 +58,12 @@ class PostRequest:
             self.tryPosts()
             time.sleep(5)
 
-    def printPosts(self):
-        for post in self.posts_result_match:
-            print(post)
-
     # =========== SEND ===========
 
     def matchResult(self, match):
         try:
-            data, signature = Signature.create_signed_token(match)
+            data, signature, headers = Signature.create_signed_token(match)
 
-            #Log.debug("[API] data", str(data))
-            #Log.debug("[API] signature", str(signature))
-            headers = {"Authorization": str(signature)}
             host = BLOCKCHAIN_URL + ":" + BLOCKCHAIN_HOST
             url = host + '/match/post/'
             x = requests.post(url, json=data, headers=headers)
@@ -66,11 +72,22 @@ class PostRequest:
         except Exception as e:
             Log.error("[API] Post 'matchResult' Error", e)
 
+    def tourResult(self, tour):
+        try:
+            data, signature, headers = Signature.create_signed_token(tour)
+
+            host = BLOCKCHAIN_URL + ":" + BLOCKCHAIN_HOST
+            url = host + '/tournament/post/'
+            x = requests.post(url, json=data, headers=headers)
+            Log.info("[API] Post 'tourResult'", x)
+            self.removePostResultTour(tour)
+        except Exception as e:
+            Log.error("[API] Post 'matchResult' Error", e)
+
     def matchRoom(self, match):
         try:
-            data, signature = Signature.create_signed_token(match)
+            data, signature, headers = Signature.create_signed_token(match)
 
-            headers = {"Authorization": str(signature)}
             host = GAMEENGINE_URL + ":" + GAMEENGINE_HOST
             url = host + '/match/create/'
             x = requests.post(url, json=data, headers=headers)

@@ -11,6 +11,8 @@ class RoomManager:
         return room.getId()
 
     def removeRoomById(self, roomId):
+        if self.isRoomIdExist(roomId):
+            self.getRoomById(roomId).leaveAllPlayers()
         initial_len = len(self.rooms)
         self.rooms = [room for room in self.rooms if room.getId() != roomId]
         if len(self.rooms) == initial_len:

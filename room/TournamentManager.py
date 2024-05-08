@@ -11,6 +11,8 @@ class TournamentManager:
         return tournament.getId()
 
     def removeTournamentById(self, tournamentId):
+        if self.isTournamentIdExist(tournamentId):
+            self.getTournamentById(tournamentId).leaveAllPlayers()
         initial_len = len(self.tournaments)
         self.tournaments = [tournament for tournament in self.tournaments if tournament.getId() != tournamentId]
         if len(self.tournaments) == initial_len:

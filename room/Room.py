@@ -72,6 +72,15 @@ class Room:
         if self.getPlayerB() != "":
             room_client_manager.getClientById(self.getPlayerB()).setInGame(status)
 
+    def leaveAllPlayers(self):
+        if room_client_manager.isClientIdExist(self.player_id_a):
+            room_client_manager.getClientById(self.player_id_a).setInARoom(False)
+            room_client_manager.getClientById(self.player_id_a).setInGame(False)
+        if room_client_manager.isClientIdExist(self.player_id_b):
+            room_client_manager.getClientById(self.player_id_b).setInARoom(False)
+            room_client_manager.getClientById(self.player_id_b).setInGame(False)
+
+
     # ======= GETTER =======
 
     def getId(self):

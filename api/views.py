@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import status
 from rest_framework.decorators import api_view
 
+from Log.Log import Log
 from room.RoomManager import room_manager
 from room.TournamentManager import tournament_manager
 from room.UniqId import Uniqid
@@ -17,24 +18,27 @@ def match_result(request):
     if data.is_valid():
         valid_data = data.validated_data
         if valid_data["tournament_id"] == 0:
-            if not room_manager.isRoomIdExist(valid_data["match_id"]):
+            if not room_manager.isRoomIdExist(str(valid_data["match_id"])):
                 error_message = "Unknown match id"
                 return Response(error_message, status=status.HTTP_400_BAD_REQUEST)
             valid_data["timestamp"] = Uniqid.getUnixTimeStamp()
             post_request.addPostResultMatch(valid_data)
             room_manager.removeRoomById(valid_data["match_id"])
         else:
-            if not tournament_manager.isTournamentIdExist(valid_data["tournament_id"]):
+            if not tournament_manager.isTournamentIdExist(str(valid_data["tournament_id"])):
                 error_message = "Unknown tournament id"
                 return Response(error_message, status=status.HTTP_400_BAD_REQUEST)
+            tour = tournament_manager.getTournamentById(str(valid_data["tournament_id"]))
 
-            tour = tournament_manager.getTournament(valid_data["tournament_id"])
-            if not tour.isRoomExistsById(valid_data["match_id"]):
+            if not tour.isRoomExistsById(str(valid_data["match_id"])):
                 error_message = "Unknown match id"
                 return Response(error_message, status=status.HTTP_400_BAD_REQUEST)
-            #peut etre verfier les autre infos, si les player id sont bien les bon pour cette game
+            valid_data["timestamp"] = Uniqid.getUnixTimeStamp()
+            tour.setRoomResult(str(valid_data["match_id"]), valid_data)
+            if tour.status == 4:
+                tournament_manager.removeTournamentById(str(valid_data["tournament_id"]))
 
             return Response(data=data.data, status=status.HTTP_200_OK)
-        return Response(data=data.data, status=status.HTTP_200_OK)
+        return Response(data=data.data, status=status.HTTP_400_BAD_REQUEST)
     else:
         return Response(data.errors, status=status.HTTP_400_BAD_REQUEST)

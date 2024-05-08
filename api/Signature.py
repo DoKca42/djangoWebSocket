@@ -25,9 +25,8 @@ class Signature:
     @staticmethod
     def create_signed_token(data, life_span_minutes=30):
         private_key = Signature.getPrivateKey()
-
-        data['transaction_id'] = Uniqid.generate()
-        data['expires'] = (datetime.utcnow() + timedelta(minutes=life_span_minutes)).isoformat()
+        #data['transaction_id'] = Uniqid.generate()
+        #data['expires'] = (datetime.utcnow() + timedelta(minutes=life_span_minutes)).isoformat()
         data_json = json.dumps(data)
 
         data_bytes = data_json.encode('utf-8')
@@ -40,4 +39,7 @@ class Signature:
             hashes.SHA256()
         )
         signature_encoded = base64.b64encode(signature).decode('utf-8')
-        return data, signature_encoded
+        headers = {"Authorization": str(signature),
+                   "TransactionId": str(Uniqid.generate()),
+                   "Expires": (datetime.utcnow() + timedelta(minutes=10)).isoformat()}
+        return data, signature_encoded, headers
