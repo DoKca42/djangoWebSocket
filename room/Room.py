@@ -26,7 +26,7 @@ class Room:
         self.score_player_b = 0
         self.game_start_date = 0
         self.game_end_date = 0
-        self.created_date = int(time.time())
+        self.created_date = Uniqid.getUnixTimeStamp()
         self.game_started = False
         self.game_ia = False
 

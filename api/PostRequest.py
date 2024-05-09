@@ -62,7 +62,7 @@ class PostRequest:
 
     def matchResult(self, match):
         try:
-            data, signature, headers = Signature.create_signed_token(match)
+            data, signature, headers = Signature.create_signed_token(match, "key/blockchain/private_key.pem")
 
             host = BLOCKCHAIN_URL + ":" + BLOCKCHAIN_HOST
             url = host + '/match/post/'
@@ -74,7 +74,7 @@ class PostRequest:
 
     def tourResult(self, tour):
         try:
-            data, signature, headers = Signature.create_signed_token(tour)
+            data, signature, headers = Signature.create_signed_token(tour, "key/blockchain/private_key.pem")
 
             host = BLOCKCHAIN_URL + ":" + BLOCKCHAIN_HOST
             url = host + '/tournament/post/'
@@ -86,10 +86,10 @@ class PostRequest:
 
     def matchRoom(self, match):
         try:
-            data, signature, headers = Signature.create_signed_token(match)
+            data, signature, headers = Signature.create_signed_token(match, "key/gameengine/private_key.pem")
 
             host = GAMEENGINE_URL + ":" + GAMEENGINE_HOST
-            url = host + '/match/create/'
+            url = host + '/api/create_game/'
             x = requests.post(url, json=data, headers=headers)
             Log.info("[API] Post 'matchRoom'", x)
             self.removePostRoomMatch(match)
