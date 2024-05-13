@@ -80,7 +80,6 @@ class Room:
             room_client_manager.getClientById(self.player_id_b).setInARoom(False)
             room_client_manager.getClientById(self.player_id_b).setInGame(False)
 
-
     # ======= GETTER =======
 
     def getId(self):

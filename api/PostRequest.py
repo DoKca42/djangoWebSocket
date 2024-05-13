@@ -7,9 +7,6 @@ from Log.Log import Log
 from api.Signature import Signature
 from api.urls_api import BLOCKCHAIN_URL, BLOCKCHAIN_HOST, GAMEENGINE_HOST, GAMEENGINE_URL
 from threading import Thread
-from datetime import datetime, timedelta
-
-from room.UniqId import Uniqid
 
 
 class PostRequest:
@@ -79,6 +76,7 @@ class PostRequest:
             host = BLOCKCHAIN_URL + ":" + BLOCKCHAIN_HOST
             url = host + '/tournament/post/'
             x = requests.post(url, json=data, headers=headers)
+
             Log.info("[API] Post 'tourResult'", x)
             self.removePostResultTour(tour)
         except Exception as e:
@@ -86,7 +84,7 @@ class PostRequest:
 
     def matchRoom(self, match):
         try:
-            data, signature, headers = Signature.create_signed_token(match, "key/gameengine/private_key.pem")
+            data, signature, headers = Signature.create_signed_token(match, "key/blockchain/private_key.pem")
 
             host = GAMEENGINE_URL + ":" + GAMEENGINE_HOST
             url = host + '/api/create_game/'

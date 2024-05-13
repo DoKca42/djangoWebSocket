@@ -8,6 +8,7 @@ from room.RoomManager import room_manager
 from room.TournamentManager import tournament_manager
 from room.UniqId import Uniqid
 from .PostRequest import post_request
+from .decode import decrypt_routine
 from .serializer import MatchResultSerializer
 
 
@@ -15,12 +16,15 @@ from .serializer import MatchResultSerializer
 @api_view(['POST'])
 def match_result(request):
     data = MatchResultSerializer(data=request.data)
+    if not decrypt_routine(request):
+        error_message = "Bad Token"
+        return Response(error_message, status=status.HTTP_401_UNAUTHORIZED)
     if data.is_valid():
         valid_data = data.validated_data
         if valid_data["tournament_id"] == 0:
-            #if not room_manager.isRoomIdExist(str(valid_data["match_id"])):
-            #    error_message = "Unknown match id"
-            #    return Response(error_message, status=status.HTTP_400_BAD_REQUEST)
+            if not room_manager.isRoomIdExist(str(valid_data["match_id"])):
+                error_message = "Unknown match id"
+                return Response(error_message, status=status.HTTP_400_BAD_REQUEST)
             valid_data["timestamp"] = Uniqid.getUnixTimeStamp()
             post_request.addPostResultMatch(valid_data)
             room_manager.removeRoomById(valid_data["match_id"])
